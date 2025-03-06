@@ -1,0 +1,124 @@
+datasource db {
+  provider = "mysql" // Ou o banco de dados de sua preferência
+  url      = env("DATABASE_URL") // Adicione sua URL de conexão no arquivo .env
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Produto {
+  idProduto    Int        @id @default(autoincrement()) @map("id_produto")
+  nome         String
+  descricao    String?    @db.VarChar(230)
+  unidade      String?    @db.VarChar(10)
+  estoqueUn    Int?
+  preco        Decimal?   @db.Decimal(10, 2)
+  criadoEm     DateTime?  @db.Timestamp(6) @map("criado_em")
+  processos    Processo[]
+  itensVenda   ItemVenda[]
+  produtosPlataforma ProdutoPlataforma[]
+}
+
+model StatusProcesso {
+  idStatus Int      @id @default(autoincrement()) @map("id_status")
+  status   String
+  processos Processo[]
+}
+
+model Processo {
+  idProcesso Int          @id @default(autoincrement()) @map("id_processo")
+  idProduto  Int
+  nome       String
+  descricao  String?
+  idStatus   Int
+  produto    Produto      @relation(fields: [idProduto], references: [idProduto])
+  status     StatusProcesso @relation(fields: [idStatus], references: [idStatus])
+  etapas     Etapa[]
+}
+
+model Fornecedor {
+  idFornecedor Int      @id @default(autoincrement()) @map("id_fornecedor")
+  nome         String
+  contato      String?  @db.VarChar(150)
+  link         String?  @db.VarChar(255)
+  estoque      Estoque[]
+}
+
+model Estoque {
+  idMaterial  Int      @id @default(autoincrement()) @map("id_material")
+  nome        String
+  quantidade  Int
+  unidade     String?  @db.VarChar(10)
+  estoqueMin  Int?
+  idFornecedor Int
+  criadoEm    DateTime @db.Timestamp(6) @map("criado_em")
+  fornecedor  Fornecedor @relation(fields: [idFornecedor], references: [idFornecedor])
+  etapasMateriais EtapaMaterial[]
+}
+
+model Etapa {
+  idEtapa     Int      @id @default(autoincrement()) @map("id_etapa")
+  idProcesso  Int
+  sequencia   Int?
+  nome        String
+  descricao   String?
+  processo    Processo @relation(fields: [idProcesso], references: [idProcesso])
+  etapasMateriais EtapaMaterial[]
+}
+
+model EtapaMaterial {
+  idEtapa     Int
+  idMaterial  Int
+  quantidade  Int?
+  unidade     String? @db.VarChar(10)
+  etapa       Etapa   @relation(fields: [idEtapa], references: [idEtapa])
+  material    Estoque @relation(fields: [idMaterial], references: [idMaterial])
+  @@id([idEtapa, idMaterial])
+}
+
+model PlataformaVenda {
+  idPlataforma Int      @id @default(autoincrement()) @map("id_plataforma")
+  nome         String
+  linkHome     String?  @db.VarChar(255)
+  vendas       Venda[]
+  produtosPlataforma ProdutoPlataforma[]
+}
+
+model StatusVenda {
+  idStatus Int      @id @default(autoincrement()) @map("id_status")
+  status   String
+  vendas   Venda[]
+}
+
+model Venda {
+  idVenda     Int        @id @default(autoincrement()) @map("id_venda")
+  nomeComprador String
+  idPlataforma Int
+  idStatus    Int
+  total       Decimal    @db.Decimal(10, 2)
+  criadoEm    DateTime?  @db.Timestamp(6) @map("criado_em")
+  plataforma  PlataformaVenda @relation(fields: [idPlataforma], references: [idPlataforma])
+  status      StatusVenda @relation(fields: [idStatus], references: [idStatus])
+  itensVenda  ItemVenda[]
+}
+
+model ItemVenda {
+  idVenda    Int
+  idProduto  Int
+  quantidade Int
+  unidade    String? @db.VarChar(10)
+  venda      Venda   @relation(fields: [idVenda], references: [idVenda])
+  produto    Produto @relation(fields: [idProduto], references: [idProduto])
+  @@id([idVenda, idProduto])
+}
+
+model ProdutoPlataforma {
+  idProduto   Int
+  idPlataforma Int
+  nome        String
+  descricao   String?
+  produto     Produto      @relation(fields: [idProduto], references: [idProduto])
+  plataforma  PlataformaVenda @relation(fields: [idPlataforma], references: [idPlataforma])
+  @@id([idProduto, idPlataforma])
+}
