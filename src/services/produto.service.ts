@@ -19,9 +19,4 @@ export class ProdutoService {
     static async update(idProduto: number, data: any) {
         return prisma.produto.update({ where: { idProduto }, data })
     }
-
-    static async delete(idProduto: number) {
-        return prisma.produto.delete({ where: { idProduto } })
-    }
-
 }

@@ -15,6 +15,8 @@ model Produto {
   estoqueUn    Int?
   preco        Decimal?   @db.Decimal(10, 2)
   criadoEm     DateTime?  @db.Timestamp(6) @map("criado_em")
+  ativo        Boolean?   @default(true)
+  inativoEm    DateTime?  @db.Timestamp(6) @map("inativo_em")
   processos    Processo[]
   itensVenda   ItemVenda[]
   produtosPlataforma ProdutoPlataforma[]

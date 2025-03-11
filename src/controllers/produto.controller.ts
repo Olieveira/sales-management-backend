@@ -19,11 +19,10 @@ export class ProdutoController {
 
     static async update(req: Request, res: Response) {
         const produto = await ProdutoService.update(Number(req.params.id), req.body);
-        produto ? res.json(produto) : res.status(404).json({ error: 'Produto não encontrado' });
-    }
-
-    static async delete(req: Request, res: Response) {
-        const result = await ProdutoService.delete(Number(req.params.id));
-        result ? res.status(204).send() : res.status(404).json({ error: 'Produto não encontrado' });
+        if (produto) {
+            res.json({ success: true, produto });
+        } else {
+            res.status(404).json({ success: false, error: 'Produto não encontrado' });
+        }
     }
 }
