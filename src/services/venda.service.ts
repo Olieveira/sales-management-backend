@@ -4,11 +4,60 @@ const prisma = new PrismaClient();
 
 export class VendaService {
     static async getAll() {
-        return prisma.venda.findMany();
-    }
+        const vendas = await prisma.venda.findMany({
+            include: {
+                plataforma: { select: { nome: true }, },
+                status: { select: { status: true }, },
+                itensVenda: {
+                    include: {
+                        produto: true,
+                    }
+                }
+            }
+        });
+
+        const formatado = vendas.map((venda) => ({
+            ...venda,
+            plataforma: venda.plataforma.nome,
+            status: venda.status.status,
+            itensVenda: venda.itensVenda.map((produto) => ({
+                idProduto: produto.idProduto,
+                quantidade: produto.quantidade,
+                unidade: produto.unidade,
+                produto: produto.produto
+            }))
+        }));
+
+        return formatado;
+    };
 
     static async getById(idVenda: number) {
-        return prisma.venda.findUnique({ where: { idVenda } });
+        const venda = await prisma.venda.findUnique({
+            where: { idVenda },
+            include: {
+                plataforma: { select: { nome: true }, },
+                status: { select: { status: true }, },
+                itensVenda: {
+                    include: {
+                        produto: true,
+                    }
+                }
+            }
+        });
+
+        const formatado = {
+            ...venda,
+            plataforma: venda?.plataforma?.nome,
+            status: venda?.status?.status,
+            itensVenda: venda?.itensVenda?.map((produto) => ({
+                idProduto: produto.idProduto,
+                quantidade: produto.quantidade,
+                unidade: produto.unidade,
+                produto: produto.produto
+            }))
+        };
+
+        return formatado;
     }
 
     static async create(data: any) {

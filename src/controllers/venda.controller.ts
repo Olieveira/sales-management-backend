@@ -20,7 +20,7 @@ export class VendaController {
 
     static async update(req: Request, res: Response) {
         const venda = await VendaService.update(Number(req.params.id), req.body);
-        venda ? res.json(venda) : res.status(404).json({ error: 'Venda não encontrada' });
+        venda ? res.json({ succcess: true, venda: venda }) : res.status(404).json({ success: false, error: 'Venda não encontrada' });
     }
 
     static async delete(req: Request, res: Response) {
