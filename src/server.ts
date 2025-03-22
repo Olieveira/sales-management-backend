@@ -3,6 +3,7 @@ import cors from 'cors';
 import produtosRoutes from './routes/produtos.routes';
 import vendasRoutes from './routes/vendas.routes';
 import statusRoutes from './routes/status.routes';
+import plataformasRoutes from './routes/plataformas.routes';
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use('/produtos', produtosRoutes);
 app.use('/vendas', vendasRoutes);
 app.use('/status', statusRoutes);
+app.use('/plataformas', plataformasRoutes);
 
 const PORT = Number(process.env.PORT) || 3000;
 const HOST = "0.0.0.0"

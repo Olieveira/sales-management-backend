@@ -110,7 +110,7 @@ model ItemVenda {
   idProduto  Int
   quantidade Int
   unidade    String? @db.VarChar(10)
-  venda      Venda   @relation(fields: [idVenda], references: [idVenda])
+  venda      Venda   @relation(fields: [idVenda], references: [idVenda], onDelete: Cascade)
   produto    Produto @relation(fields: [idProduto], references: [idProduto])
   @@id([idVenda, idProduto])
 }
