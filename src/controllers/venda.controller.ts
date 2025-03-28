@@ -14,8 +14,17 @@ export class VendaController {
     }
 
     static async create(req: Request, res: Response) {
+        req.body.criadoEm = new Date(req.body.criadoEm).toISOString()
+        
+        console.log("Body recebido no create - venda.controller:\n", req.body)
+        
         const venda = await VendaService.create(req.body);
-        res.status(201).json(venda);
+        
+        if (venda) {
+            res.status(201).json(venda);
+        } else {
+            res.status(400).json({ error: 'Erro ao criar venda' });
+        }
     }
 
     static async update(req: Request, res: Response) {

@@ -17,6 +17,11 @@ export class ProdutoController {
             if (req.body.criadoEm) {
                 req.body.criadoEm = new Date(req.body.criadoEm).toISOString()
             }
+            if (req.body.ativo) {
+                req.body.inativoEm = null
+            } else {
+                req.body.inativoEm = new Date(req.body.inativoEm).toISOString()
+            }
 
             const produto = await ProdutoService.create(req.body);
             res.status(201).json(produto);
