@@ -6,6 +6,7 @@ import statusRoutes from './routes/status.routes';
 import plataformasRoutes from './routes/plataformas.routes';
 import itensVendaRoutes from './routes/itensVenda.routes';
 import estoqueRoutes from './routes/estoque.routes';
+import fornecedoresRoutes from './routes/fornecedores.routes';
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use('/status', statusRoutes);
 app.use('/plataformas', plataformasRoutes);
 app.use('/itensVenda', itensVendaRoutes);
 app.use('/estoque', estoqueRoutes);
+app.use('/fornecedores', fornecedoresRoutes);
 
 const PORT = Number(process.env.PORT) || 3000;
 const HOST = "0.0.0.0"

@@ -19,4 +19,17 @@ export class EstoqueService {
 
         return estoque;
     };
+
+    static async getById(id: number) {
+        return await prisma.estoque.findUnique({
+            where: { idMaterial: id },
+            include: {
+                fornecedor: {
+                    select: {
+                        nome: true, contato: true, link: true
+                    }
+                }
+            }
+        })
+    }
 }
