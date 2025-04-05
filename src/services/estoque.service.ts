@@ -32,4 +32,12 @@ export class EstoqueService {
             }
         })
     }
+
+    static async update(idMaterial: number, data: any) {
+        return prisma.estoque.update({ where: { idMaterial }, data });
+    }
+
+    static async create(data: any) {
+        return prisma.estoque.create({ data });
+    }
 }
