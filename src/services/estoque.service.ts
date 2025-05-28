@@ -40,4 +40,8 @@ export class EstoqueService {
     static async create(data: any) {
         return prisma.estoque.create({ data });
     }
+
+    static async delete(idMaterial: number) {
+        return prisma.estoque.delete({ where: { idMaterial } })
+    }
 }

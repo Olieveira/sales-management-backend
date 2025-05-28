@@ -26,4 +26,8 @@ export class EstoqueController {
         const estoque = await EstoqueService.create(req.body);
         estoque ? res.status(201).json(estoque) : res.status(400).json({ error: 'Erro ao criar material' });
     }
+    static async delete(req: Request, res: Response){
+        const result = await EstoqueService.delete(Number(req.params.id));
+        result ? res.status(204).send() : res.status(404).json({error: 'Material não encontrado!'})
+    }
 }
