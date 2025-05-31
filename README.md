@@ -19,8 +19,8 @@ Este é o backend de um sistema de gerenciamento de vendas desenvolvido com Node
 
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/seu-usuario/seu-repositorio.git
-   cd seu-repositorio
+   git clone https://github.com/Olieveira/sales-management-backend.git
+   cd sales-management-backend
    ```
 
 2. Instale as dependências:
@@ -47,6 +47,7 @@ O servidor estará disponível em `http://localhost:3000`.
 
 - **src/**: Contém o código-fonte do backend.
   - **controllers/**: Controladores das rotas.
+  - **models-docs/**: Modelo físico do banco de dados.
   - **routes/**: Definição das rotas.
   - **services/**: Lógica de negócios e interação com o banco de dados.
 - **prisma/**: Configurações e migrações do Prisma.
