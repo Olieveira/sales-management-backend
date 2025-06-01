@@ -1,126 +1,135 @@
 datasource db {
-  provider = "mysql" // Ou o banco de dados de sua preferência
-  url      = env("DATABASE_URL") // Adicione sua URL de conexão no arquivo .env
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 generator client {
   provider = "prisma-client-js"
 }
 
+model CategoriasProdutos {
+  idCategoria Int        @id @default(autoincrement()) @map("id_categoria")
+  nome        String
+  produtos    Produto[]
+  processos   Processo[]
+}
+
 model Produto {
-  idProduto    Int        @id @default(autoincrement()) @map("id_produto")
-  nome         String
-  descricao    String?    @db.VarChar(230)
-  unidade      String?    @db.VarChar(10)
-  estoqueUn    Int?
-  preco        Decimal?   @db.Decimal(10, 2)
-  criadoEm     DateTime?  @db.Timestamp(6) @map("criado_em")
-  ativo        Boolean?   @default(true)
-  inativoEm    DateTime?  @db.Timestamp(6) @map("inativo_em")
-  processos    Processo[]
-  itensVenda   ItemVenda[]
-  produtosPlataforma ProdutoPlataforma[]
+  idProduto        Int                @id @default(autoincrement()) @map("id_produto")
+  nome             String
+  idCategoria      Int
+  descricao        String?            @db.VarChar(230)
+  unidade          String?            @db.VarChar(35)
+  estoqueUn        Int?
+  preco            Decimal?           @db.Decimal(10, 2)
+  criadoEm         DateTime?          @map("criado_em") @db.Timestamp(6)
+  ativo            Boolean?           @default(true)
+  inativoEm        DateTime?          @map("inativo_em") @db.Timestamp(6)
+  itensVenda       ItemVenda[]
+  categoriaProduto CategoriasProdutos @relation(fields: [idCategoria], references: [idCategoria])
 }
 
 model StatusProcesso {
-  idStatus Int      @id @default(autoincrement()) @map("id_status")
-  status   String
+  idStatus  Int        @id @default(autoincrement()) @map("id_status")
+  status    String?    @db.VarChar(45)
   processos Processo[]
 }
 
 model Processo {
-  idProcesso Int          @id @default(autoincrement()) @map("id_processo")
-  idProduto  Int
-  nome       String
-  descricao  String?
-  idStatus   Int
-  produto    Produto      @relation(fields: [idProduto], references: [idProduto])
-  status     StatusProcesso @relation(fields: [idStatus], references: [idStatus])
-  etapas     Etapa[]
+  idProcesso       Int                @id @default(autoincrement()) @map("id_processo")
+  nome             String             @db.VarChar(45)
+  descricao        String?
+  idStatus         Int
+  idCategoria      Int
+  criadoEm         DateTime
+  categoriaProduto CategoriasProdutos @relation(fields: [idCategoria], references: [idCategoria])
+  status           StatusProcesso     @relation(fields: [idStatus], references: [idStatus])
+  etapas           Etapa[]
+  EtapaMaterial    EtapaMaterial[]
 }
 
 model Fornecedor {
-  idFornecedor Int      @id @default(autoincrement()) @map("id_fornecedor")
-  nome         String
-  contato      String?  @db.VarChar(150)
-  link         String?  @db.VarChar(255)
-  estoque      Estoque[]
+  idFornecedor Int       @id @default(autoincrement()) @map("id_fornecedor")
+  nome         String    @db.VarChar(45)
+  contato      String?   @db.VarChar(150)
+  link         String?   @db.VarChar(255)
+  materiais    Estoque[]
 }
 
 model Estoque {
-  idMaterial  Int      @id @default(autoincrement()) @map("id_material")
-  nome        String
-  quantidade  Int
-  unidade     String?  @db.VarChar(10)
-  estoqueMin  Int?
-  idFornecedor Int
-  criadoEm    DateTime @db.Timestamp(6) @map("criado_em")
-  fornecedor  Fornecedor @relation(fields: [idFornecedor], references: [idFornecedor])
+  idMaterial      Int             @id @default(autoincrement()) @map("id_material")
+  nome            String          @db.VarChar(35)
+  quantidade      Int
+  unidade         String?         @db.VarChar(10)
+  estoqueMin      Int?
+  criadoEm        DateTime        @map("criado_em") @db.Timestamp(6)
+  idFornecedor    Int
+  fornecedor      Fornecedor      @relation(fields: [idFornecedor], references: [idFornecedor])
   etapasMateriais EtapaMaterial[]
 }
 
+model StatusEtapa {
+  idStatus Int     @id @default(autoincrement()) @map("id_status")
+  status   String  @db.VarChar(45)
+  etapas   Etapa[]
+}
+
 model Etapa {
-  idEtapa     Int      @id @default(autoincrement()) @map("id_etapa")
-  idProcesso  Int
-  sequencia   Int?
-  nome        String
-  descricao   String?
-  processo    Processo @relation(fields: [idProcesso], references: [idProcesso])
+  idEtapa         Int             @id @default(autoincrement()) @map("id_etapa")
+  idProcesso      Int
+  sequencia       Int?
+  nome            String          @db.VarChar(45)
+  descricao       String?
+  idStatus        Int
+  statusEtapa     StatusEtapa     @relation(fields: [idStatus], references: [idStatus])
+  Processo        Processo?       @relation(fields: [idProcesso], references: [idProcesso])
   etapasMateriais EtapaMaterial[]
 }
 
 model EtapaMaterial {
-  idEtapa     Int
-  idMaterial  Int
-  quantidade  Int?
-  unidade     String? @db.VarChar(10)
-  etapa       Etapa   @relation(fields: [idEtapa], references: [idEtapa])
-  material    Estoque @relation(fields: [idMaterial], references: [idMaterial])
+  idEtapa    Int
+  idProcesso Int
+  idMaterial Int
+  quantidade Int?
+  etapa      Etapa    @relation(fields: [idEtapa], references: [idEtapa])
+  processo   Processo @relation(fields: [idProcesso], references: [idProcesso])
+  material   Estoque  @relation(fields: [idMaterial], references: [idMaterial])
+
   @@id([idEtapa, idMaterial])
 }
 
 model PlataformaVenda {
-  idPlataforma Int      @id @default(autoincrement()) @map("id_plataforma")
-  nome         String
-  linkHome     String?  @db.VarChar(255)
+  idPlataforma Int     @id @default(autoincrement()) @map("id_plataforma")
+  nome         String  @db.VarChar(45)
+  linkHome     String? @db.VarChar(255)
   vendas       Venda[]
-  produtosPlataforma ProdutoPlataforma[]
 }
 
 model StatusVenda {
-  idStatus Int      @id @default(autoincrement()) @map("id_status")
+  idStatus Int     @id @default(autoincrement()) @map("id_status")
   status   String
   vendas   Venda[]
 }
 
 model Venda {
-  idVenda     Int        @id @default(autoincrement()) @map("id_venda")
-  nomeComprador String
-  idPlataforma Int
-  idStatus    Int
-  total       Decimal    @db.Decimal(10, 2)
-  criadoEm    DateTime?  @db.Timestamp(6) @map("criado_em")
-  plataforma  PlataformaVenda @relation(fields: [idPlataforma], references: [idPlataforma])
-  status      StatusVenda @relation(fields: [idStatus], references: [idStatus])
-  itensVenda  ItemVenda[]
+  idVenda       Int             @id @default(autoincrement()) @map("id_venda")
+  nomeComprador String          @db.VarChar(120)
+  idPlataforma  Int
+  idStatus      Int
+  total         Decimal         @db.Decimal(10, 2)
+  criadoEm      DateTime?       @map("criado_em") @db.Timestamp(6)
+  plataforma    PlataformaVenda @relation(fields: [idPlataforma], references: [idPlataforma])
+  status        StatusVenda     @relation(fields: [idStatus], references: [idStatus])
+  itensVenda    ItemVenda[]
 }
 
 model ItemVenda {
   idVenda    Int
   idProduto  Int
   quantidade Int
-  unidade    String? @db.VarChar(10)
+  unidade    String? @db.VarChar(35)
   venda      Venda   @relation(fields: [idVenda], references: [idVenda], onDelete: Cascade)
   produto    Produto @relation(fields: [idProduto], references: [idProduto])
-  @@id([idVenda, idProduto])
-}
 
-model ProdutoPlataforma {
-  idProduto   Int
-  idPlataforma Int
-  nome        String
-  descricao   String?
-  produto     Produto      @relation(fields: [idProduto], references: [idProduto])
-  plataforma  PlataformaVenda @relation(fields: [idPlataforma], references: [idPlataforma])
-  @@id([idProduto, idPlataforma])
+  @@id([idVenda, idProduto])
 }

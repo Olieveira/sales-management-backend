@@ -31,7 +31,7 @@ export class ItensVendaService {
     static async delete(idProduto: number, idVenda: number) {
         return prisma.itemVenda.delete({
             where: {
-                idVenda_idProduto: { idVenda, idProduto } // Usando a chave composta
+                idVenda_idProduto: { idVenda, idProduto } // chave composta
             }
         });
     }

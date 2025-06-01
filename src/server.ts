@@ -7,8 +7,12 @@ import plataformasRoutes from './routes/plataformas.routes';
 import itensVendaRoutes from './routes/itensVenda.routes';
 import estoqueRoutes from './routes/estoque.routes';
 import fornecedoresRoutes from './routes/fornecedores.routes';
+import categoriaProdutosRoutes from './routes/categoriasProdutos.routes';
 
 const app = express();
+
+// Middleware
+app.use(express.json());
 
 // Configuração de CORS
 app.use(cors({
@@ -16,9 +20,6 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
-
-// Middleware
-app.use(express.json());
 
 // Rotas
 app.use('/produtos', produtosRoutes);
@@ -28,6 +29,7 @@ app.use('/plataformas', plataformasRoutes);
 app.use('/itensVenda', itensVendaRoutes);
 app.use('/estoque', estoqueRoutes);
 app.use('/fornecedores', fornecedoresRoutes);
+app.use('/categorias', categoriaProdutosRoutes);
 
 const PORT = Number(process.env.PORT) || 3000;
 const HOST = "0.0.0.0"
