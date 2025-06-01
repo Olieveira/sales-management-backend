@@ -8,6 +8,11 @@ export class CategoriasProdutosController {
         res.json(categorias);
     }
 
+    static async getById(req: Request, res: Response) {
+        const categoria = await CategoriasProdutosService.getById(Number(req.params.id))
+        categoria ? res.json(categoria) : res.json({error: 'Categoria não encontrada'});
+    }
+
     static async create(req: Request, res: Response) {
         try {
             console.log("Body recebido: ", req.body)

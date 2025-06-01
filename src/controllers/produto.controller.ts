@@ -14,6 +14,10 @@ export class ProdutoController {
 
     static async create(req: Request, res: Response) {
         try {
+            if (req.body.categoriaProduto && req.body.categoriaProduto.idCategoria) {
+                req.body.idCategoria = req.body.categoriaProduto.idCategoria;
+                delete req.body.categoriaProduto;
+            }
             if (req.body.criadoEm) {
                 req.body.criadoEm = new Date(req.body.criadoEm).toISOString()
             }
@@ -21,6 +25,12 @@ export class ProdutoController {
                 req.body.inativoEm = null
             } else {
                 req.body.inativoEm = new Date(req.body.inativoEm).toISOString()
+            }
+            if (typeof req.body.estoqueUn === 'string') {
+                req.body.estoqueUn = Number(req.body.estoqueUn);
+            }
+            if (typeof req.body.preco === 'string') {
+                req.body.preco = Number(req.body.preco);
             }
 
             const produto = await ProdutoService.create(req.body);
